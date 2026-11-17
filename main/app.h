@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "gz_core.h"
 
-#define APP_VER "1.1.0"
+#define APP_VER "1.2.0"
 #define AP_SSID "GanZhi-Setup"
 
 typedef enum { DEV_SETUP, DEV_RUN } dev_mode_t;
@@ -26,10 +26,16 @@ void app_cmd_reconfig(void);
 void app_cmd_connect(const char *ssid, const char *pass);
 void app_cmd_key(int key, int ev);
 void app_cmd_ap(bool on);      /* 运行中开/关内网热点（AP+STA 共存） */
+void app_cmd_time(int64_t epoch_ms);   /* 手机网页校时 */
+void app_cmd_loc(int32_t lat_e6, int32_t lon_e6);
+int32_t app_lat_e6(void);
+int32_t app_lon_e6(void);
+const char *app_time_src(void);        /* none / net / phone */
 bool app_ap_on(void);
 
 /* OLED 显示状态 */
 bool app_invert(void);
+int app_theme(void);           /* 0夜 1昼 2素(纯黑白) */
 int app_brightness(void);      /* 0..3 */
 bool app_display_sleep(void);
 uint32_t app_cast_seq(void);

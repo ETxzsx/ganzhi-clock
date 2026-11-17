@@ -24,3 +24,4 @@ const char *mj_done(mj_t *m);
 
 int mj_get_str(const char *json, const char *key, char *out, int outsz);
 int mj_get_int(const char *json, const char *key, int *out);
+int mj_get_ll(const char *json, const char *key, long long *out);

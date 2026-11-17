@@ -54,7 +54,7 @@ static bool s_time_valid = false;
 static int64_t s_last_save_us = 0;
 
 /* 显示与六爻状态 */
-static volatile bool s_invert = false;
+static volatile int s_theme = 0;      /* 0夜 1昼 2素 */
 static volatile int s_bright = 2;
 static volatile bool s_sleep = false;
 static volatile uint32_t s_cast_seq = 0;
@@ -62,18 +62,22 @@ static ly_chart_t s_chart;
 static bool s_chart_valid = false;
 static int64_t s_cast_epoch;
 static int s_cast_day;
+static int32_t s_lat_e6 = 34340000, s_lon_e6 = 108940000;   /* 默认西安 */
+static char s_time_src[8] = "none";
 
 typedef struct {
-    int type;          /* 1 进入配网 2 连接WiFi 3 按键 4 退出配网 */
+    int type;          /* 1 进入配网 2 连接WiFi 3 按键 4 退出配网 5 热点 6 手机校时 7 定位 */
     char ssid[33];
     char pass[65];
     int key, ev;
+    int64_t epoch;
+    int32_t lat, lon;
 } cmd_t;
 static QueueHandle_t s_cmdq;
 
 dev_mode_t app_mode(void) { return s_mode; }
 int app_view(void) { return s_view; }
-void app_set_view(int v) { if (v >= 0 && v <= 2) s_view = v; }
+void app_set_view(int v) { if (v >= 0 && v <= 3) s_view = v; }
 const char *app_ssid(void) { return s_ssid; }
 const char *app_ip(void) { return s_ip; }
 int app_rssi(void) { return s_rssi; }
@@ -84,7 +88,11 @@ const char *app_fail_reason(void) { return s_reason; }
 const char *app_mac(void) { return s_mac; }
 bool app_ap_on(void) { return s_ap_on; }
 uint32_t app_uptime_s(void) { return (uint32_t)(esp_timer_get_time() / 1000000); }
-bool app_invert(void) { return s_invert; }
+bool app_invert(void) { return s_theme == 1; }
+int app_theme(void) { return s_theme; }
+int32_t app_lat_e6(void) { return s_lat_e6; }
+int32_t app_lon_e6(void) { return s_lon_e6; }
+const char *app_time_src(void) { return s_time_src; }
 int app_brightness(void) { return s_bright; }
 bool app_display_sleep(void) { return s_sleep; }
 uint32_t app_cast_seq(void) { return s_cast_seq; }
@@ -124,6 +132,16 @@ void app_cmd_ap(bool on)
     cmd_t c = { .type = 5, .key = on ? 1 : 0 };
     xQueueSend(s_cmdq, &c, 0);
 }
+void app_cmd_time(int64_t epoch_ms)
+{
+    cmd_t c = { .type = 6, .epoch = epoch_ms };
+    xQueueSend(s_cmdq, &c, 0);
+}
+void app_cmd_loc(int32_t lat_e6, int32_t lon_e6)
+{
+    cmd_t c = { .type = 7, .lat = lat_e6, .lon = lon_e6 };
+    xQueueSend(s_cmdq, &c, 0);
+}
 static void cmd_exit_setup(void)
 {
     cmd_t c = { .type = 4 };
@@ -149,6 +167,27 @@ static bool load_creds(void)
     nvs_get_str(h, "pass", s_pass, &pl);
     nvs_close(h);
     return e1 == ESP_OK && s_ssid[0];
+}
+static void save_loc(void)
+{
+    nvs_handle_t h;
+    if (nvs_open(NVS_NS, NVS_READWRITE, &h) == ESP_OK) {
+        nvs_set_i32(h, "lat", s_lat_e6);
+        nvs_set_i32(h, "lon", s_lon_e6);
+        nvs_commit(h);
+        nvs_close(h);
+    }
+}
+static void load_loc(void)
+{
+    nvs_handle_t h;
+    if (nvs_open(NVS_NS, NVS_READONLY, &h) != ESP_OK) return;
+    int32_t la = 0, lo = 0;
+    if (nvs_get_i32(h, "lat", &la) == ESP_OK && nvs_get_i32(h, "lon", &lo) == ESP_OK
+        && la >= -90000000 && la <= 90000000 && lo >= -180000000 && lo <= 180000000) {
+        s_lat_e6 = la; s_lon_e6 = lo;
+    }
+    nvs_close(h);
 }
 static void save_time(void)
 {
@@ -370,7 +409,7 @@ static void handle_key(int k, int ev)
     }
     if (k == KEY_BOOT) {
         if (ev == KEV_SHORT) {
-            s_view = (s_view + 1) % 3;
+            s_view = (s_view + 1) % 4;
             ESP_LOGI(TAG, "view %d", s_view);
         } else {
             if (s_mode == DEV_RUN) app_cmd_ap(!s_ap_on);
@@ -380,7 +419,8 @@ static void handle_key(int k, int ev)
         s_view = 1;
         do_cast();
     } else if (k == KEY_1 && ev == KEV_SHORT) {
-        s_invert = !s_invert;
+        s_theme = (s_theme + 1) % 3;
+        ESP_LOGI(TAG, "theme %d", s_theme);
     } else if (k == KEY_2 && ev == KEV_SHORT) {
         s_bright = (s_bright + 1) & 3;
     } else if (k == KEY_3) {
@@ -407,6 +447,22 @@ static void control_task(void *arg)
                 }
             }
             else if (c.type == 3) handle_key(c.key, c.ev);
+            else if (c.type == 6) {
+                struct timeval tv = { .tv_sec = (time_t)(c.epoch / 1000),
+                                      .tv_usec = (suseconds_t)(c.epoch % 1000) * 1000 };
+                settimeofday(&tv, NULL);
+                s_synced = true;
+                s_time_valid = true;
+                strcpy(s_time_src, "phone");
+                save_time();
+                ESP_LOGI(TAG, "time synced from phone: %lld", (long long)c.epoch);
+            }
+            else if (c.type == 7) {
+                s_lat_e6 = c.lat;
+                s_lon_e6 = c.lon;
+                save_loc();
+                ESP_LOGI(TAG, "loc %.4f %.4f", c.lat / 1e6, c.lon / 1e6);
+            }
             else if (c.type == 2) {
                 strlcpy(s_ssid, c.ssid, sizeof s_ssid);
                 strlcpy(s_pass, c.pass, sizeof s_pass);
@@ -434,6 +490,7 @@ static void control_task(void *arg)
         if (!s_synced && s_connected && esp_netif_sntp_sync_wait(0) == ESP_OK) {
             s_synced = true;
             s_time_valid = true;
+            strcpy(s_time_src, "net");
             save_time();
             ESP_LOGI(TAG, "time synced");
         }
@@ -479,6 +536,7 @@ void app_main(void)
     s_next_retry_us = s_boot_us + 30000000;   /* 首连由 STA_START 发起，重试定时器稍后再介入 */
     s_cmdq = xQueueCreate(8, sizeof(cmd_t));
     restore_time();
+    load_loc();
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());

@@ -3,15 +3,26 @@ const fs = require('fs');
 const path = require('path');
 const WWW = path.join(__dirname, '..', 'www');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8' };
-let dev = { mode: 'run', view: 0, ssid: 'TP-LINK_5G', ip: '192.168.1.88', rssi: -52, prov: 'idle', reason: '', ap: false, chart: { seq: 0, valid: false } };
+let dev = { mode: 'run', view: 0, ssid: 'TP-LINK_5G', ip: '192.168.1.88', rssi: -52, prov: 'idle', reason: '', ap: false, chart: { seq: 0, valid: false }, src: 'net', latE6: 34340000, lonE6: 108940000, skew: 0 };
 let provAt = 0;
 const server = http.createServer((req, res) => {
   const u = req.url.split('?')[0];
   const json = (o) => { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(o)); };
   const body = (cb) => { let b = ''; req.on('data', (c) => b += c); req.on('end', () => cb(b)); };
-  if (u === '/api/now') return json({ epoch: Date.now(), synced: true });
-  if (u === '/api/state') return json({ mode: dev.mode, view: dev.view, ssid: dev.ssid, ip: dev.ip, rssi: dev.rssi, synced: true, uptime: 3725, ver: '1.1.0', mac: 'A4:CB:8F:D6:08:A0', ap: dev.ap });
+  if (u === '/api/now') return json({ epoch: Date.now() + dev.skew, synced: true });
+  if (u === '/api/state') return json({ mode: dev.mode, view: dev.view, ssid: dev.ssid, ip: dev.ip, rssi: dev.rssi, synced: true, uptime: 3725, ver: '1.2.0', mac: 'A4:CB:8F:D6:08:A0', ap: dev.ap, src: dev.src, latE6: dev.latE6, lonE6: dev.lonE6 });
   if (u === '/api/chart') return json(dev.chart);
+  if (u === '/api/time' && req.method === 'POST') return body((b) => {
+    try { const e = JSON.parse(b).epoch; if (e > 1700000000000 && e < 4102444800000) { dev.skew = e - Date.now(); dev.src = 'phone'; } } catch (e) {}
+    json({ ok: true });
+  });
+  if (u === '/api/loc' && req.method === 'POST') return body((b) => {
+    try {
+      const d = JSON.parse(b);
+      if (Math.abs(d.latE6) <= 90000000 && Math.abs(d.lonE6) <= 180000000) { dev.latE6 = d.latE6; dev.lonE6 = d.lonE6; }
+    } catch (e) {}
+    json({ ok: true });
+  });
   if (u === '/qa-boardcast' && req.method === 'POST') {
     const vals = [7, 8, 9, 6, 7, 8];
     dev.chart = {
@@ -22,7 +33,7 @@ const server = http.createServer((req, res) => {
     return json({ ok: true, seq: dev.chart.seq });
   }
   if (u === '/api/ap' && req.method === 'POST') return body((b) => { try { const on = JSON.parse(b).on; if (dev.mode === 'run') dev.ap = !!on; } catch (e) {} json({ ok: true }); });
-  if (u === '/api/view' && req.method === 'POST') return body((b) => { try { const v = JSON.parse(b).v; if (v >= 0 && v <= 2) dev.view = v; } catch (e) {} json({ ok: true }); });
+  if (u === '/api/view' && req.method === 'POST') return body((b) => { try { const v = JSON.parse(b).v; if (v >= 0 && v <= 3) dev.view = v; } catch (e) {} json({ ok: true }); });
   if (u === '/api/reconfig' && req.method === 'POST') { dev.mode = 'setup'; dev.view = 2; dev.prov = 'idle'; dev.ap = false; return json({ ok: true }); }
   if (u === '/scan') return json([
     { ssid: 'TP-LINK_5G', rssi: -45, open: false },
@@ -45,11 +56,12 @@ const server = http.createServer((req, res) => {
     if (dev.prov === 'ok' && Date.now() - provAt > 6500) { dev.mode = 'run'; dev.view = 0; dev.prov = 'idle'; }
     return json({ state: dev.prov, ssid: dev.ssid, ip: dev.ip, reason: dev.reason, mac: 'A4:CB:8F:D6:08:A0' });
   }
-  if (u === '/qa-reset' && req.method === 'POST') { dev.chart = { seq: 0, valid: false }; dev.view = 0; return json({ ok: true }); }
+  if (u === '/qa-reset' && req.method === 'POST') { dev.chart = { seq: 0, valid: false }; dev.view = 0; dev.skew = 0; dev.src = 'net'; dev.latE6 = 34340000; dev.lonE6 = 108940000; return json({ ok: true }); }
   if (u === '/qa-mobile') {
     const q = new URL(req.url, 'http://x').searchParams;
     const w = +q.get('w') || 409, h = +q.get('h') || 860;
     const theme = q.get('theme') || '', src = q.get('src') || '/', cast = q.get('cast') === '1', reset = q.get('reset') === '1';
+    if (q.get('view') !== null) dev.view = +q.get('view');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
     return res.end('<!doctype html><meta charset="utf-8"><body style="margin:0;background:#000">' +
       '<script>try{if(' + JSON.stringify(theme) + ')localStorage.setItem("gz_theme",' + JSON.stringify(theme) + ');}catch(e){}' +

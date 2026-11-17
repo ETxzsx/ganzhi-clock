@@ -32,6 +32,12 @@ static const uint16_t PAL_LIGHT[LC_N] = {
     0x9381, 0xBC85, 0xB1C4, 0xD2C8,
     0x3389, 0x2AF1, 0x9325, 0x7A75, 0x5B2E
 };
+/* 素：纯黑白灰阶（与 www mono 主题同源） */
+static const uint16_t PAL_MONO[LC_N] = {
+    0x0000, 0x1082, 0x39C7, 0xFFFF, 0x7BCF,
+    0xEF5D, 0xFFFF, 0xDEDB, 0xFFFF,
+    0xCE79, 0xBDF7, 0xC638, 0xB5B6, 0xE71C
+};
 
 static spi_device_handle_t s_dev;
 static bool s_ok;
@@ -89,9 +95,9 @@ static void rreg(uint8_t cmd, int n, uint8_t *out)
     memcpy(out, r.rx_data, n);
 }
 
-void lcd_palette(int level, bool invert)
+void lcd_palette(int level, int theme)
 {
-    const uint16_t *t = invert ? PAL_LIGHT : PAL_DARK;
+    const uint16_t *t = theme == 2 ? PAL_MONO : theme == 1 ? PAL_LIGHT : PAL_DARK;
     int dim = (3 - (level & 3)) * 50;
     for (int i = 0; i < LC_N; i++) s_pal[i] = mix(t[i], t[LC_BG], dim);
 }
@@ -408,7 +414,7 @@ esp_err_t st7789_init(void)
 
     s_ok = true;
     xl9555_lcd_power(true);
-    lcd_palette(3, false);
+    lcd_palette(3, 0);
     lcd_clear(LC_BG);
     lcd_decor();
     lcd_flush();

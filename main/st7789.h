@@ -16,7 +16,7 @@ enum {
     LC_JADE, LC_INDIGO, LC_EARTH, LC_VIOLET, LC_SILVER,
     LC_N
 };
-void lcd_palette(int level, bool invert);   /* level 0..3 */
+void lcd_palette(int level, int theme);   /* level 0..3; theme 0夜 1昼 2素(纯黑白) */
 void lcd_clear(int c);
 void lcd_pixel(int x, int y, int c);
 void lcd_rect(int x, int y, int w, int h, int c);

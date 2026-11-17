@@ -50,3 +50,22 @@ const char *ly_rel(int r);
 const char *ly_spirit(int s);
 const char *ly_palace_name(int p);
 const char *ly_stage_name(int s);
+
+/* 星象（与 www/core.js 同表）：二十八宿宿度/距星、十二次、四象、日躔月将、恒星时与中星 */
+typedef struct {
+    double lst;          /* 本地恒星时 deg */
+    int midIdx;          /* 当前中星宿序 0..27 */
+    int sunCi;           /* 日躔次支序 0..11 */
+    int yueJiang;        /* 月将支序（同日躔次） */
+    int hourZhi;         /* 当前时辰支序 */
+} gz_star_t;
+void gz_star(int64_t epoch_ms, double lon, gz_star_t *o);
+const char *gz_lodge(int i);
+int gz_lodge_du(int i);
+const char *gz_lodge_star(int i);
+int gz_lodge_quad(int i);      /* 0东青龙 1北玄武 2西白虎 3南朱雀 */
+const char *gz_quad(int q);
+const char *gz_ci(int zhi);
+void gz_ci_lodges(int zhi, int out[4], int *n);
+void gz_lodge_span(int i, double *start, double *width);  /* 赤道宿度 span, deg */
+void gz_lodge_disp(int i, double *start, double *width);  /* 盖天轮显示 span：四象各居正方位90° */

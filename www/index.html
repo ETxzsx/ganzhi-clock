@@ -387,6 +387,67 @@ body[data-motion="off"] #baguaRing,body[data-motion="off"] .bg-bagua{animation-p
   background:linear-gradient(180deg,var(--card3),var(--card2));color:var(--ink);font-family:ui-monospace,Consolas,monospace;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
 
+/* ---------- 星象：盖天星轮 ---------- */
+.star-card{padding:14px 14px 12px}
+.star-wrap{position:relative;margin:0 auto;max-width:520px}
+#starWheel{width:100%;height:auto;display:block}
+#starWheel text{font-family:var(--serif);user-select:none;-webkit-user-select:none}
+.sw-ring{fill:none;stroke:var(--line)}
+.sw-wedge{fill:currentColor;fill-opacity:.10;stroke:currentColor;stroke-opacity:.45;stroke-width:.7;cursor:pointer;transition:fill-opacity .18s}
+.sw-wedge:hover{fill-opacity:.28}
+.sw-wedge.mid{fill-opacity:.32;stroke-opacity:1;stroke-width:1.5}
+.sw-lodge{font-size:11px;fill:currentColor;pointer-events:none}
+.sw-ci{fill:var(--card2);fill-opacity:.6;stroke:var(--line);stroke-width:.7;cursor:pointer;transition:fill-opacity .18s}
+.sw-ci:hover{fill-opacity:1}
+.sw-ci.sun{fill:var(--acc);fill-opacity:.20;stroke:var(--acc);stroke-opacity:.9}
+.sw-ciname{font-size:10.5px;fill:var(--ink2);pointer-events:none}
+.sw-ciname.sun{fill:var(--acc);font-weight:700}
+.sw-q0{color:var(--wx-木)}.sw-q1{color:var(--wx-水)}.sw-q2{color:var(--wx-金)}.sw-q3{color:var(--wx-火)}
+.sw-arc{fill:none;stroke:currentColor;stroke-width:3;stroke-opacity:.75;stroke-linecap:round}
+.sw-dir{font-size:15px;font-weight:900;fill:var(--ink);letter-spacing:2px}
+.sw-hand{stroke:var(--cinnabar2);stroke-width:2;stroke-linecap:round}
+.sw-handdot{fill:var(--cinnabar2)}
+.sw-hourzhi{font-size:10px;fill:var(--cinnabar2);font-weight:700}
+.sw-midtick{stroke:var(--acc);stroke-width:2}
+.sw-middot{fill:var(--acc)}
+.sw-center{fill:var(--bg2);stroke:var(--line)}
+.sw-mid{font-size:25px;font-weight:900;fill:var(--acc)}
+.sw-lbl{font-size:8.5px;fill:var(--ink3);letter-spacing:3px}
+.sw-yj{font-size:11px;fill:var(--ink);letter-spacing:1px}
+.sw-lst{font-size:8px;fill:var(--ink3)}
+.star-note{font-size:11px;color:var(--ink3);line-height:1.9;margin:9px 2px 0;letter-spacing:.4px}
+.star-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.star-quad{border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px;background:var(--card2)}
+.star-quad h5{margin:0 0 6px;font-size:12.5px;letter-spacing:2px;display:flex;align-items:center;gap:6px;color:currentColor;font-family:var(--serif)}
+.star-quad h5 i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
+.sq-l{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:11.5px;color:var(--ink3);padding:3.5px 0;border-top:1px dashed var(--line)}
+.sq-l b{color:var(--ink2);font-weight:600;font-family:var(--serif)}
+.sq-l.mid b{color:var(--acc)}
+.sq-l.mid::after{content:"中";font-size:9px;color:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:0 3px}
+.sq-l small{font-size:9.5px;opacity:.8;white-space:nowrap}
+.ci-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.ci-cell{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:var(--card2);cursor:pointer;transition:border-color .2s,transform .2s}
+.ci-cell:hover{transform:translateY(-2px)}
+.ci-cell.sun{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc),0 4px 18px color-mix(in srgb,var(--acc) 22%,transparent)}
+.ci-cell h5{margin:0 0 4px;font-size:13px;color:var(--ink);font-family:var(--serif);letter-spacing:2px;display:flex;justify-content:space-between;gap:6px}
+.ci-cell h5 span{color:var(--ink3);font-size:10.5px;letter-spacing:1px}
+.ci-cell.sun h5{color:var(--acc)}
+.ci-cell p{margin:0;font-size:10.5px;color:var(--ink3);line-height:1.8}
+.loc-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center}
+.loc-actions select,.loc-actions input{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:9px;
+  padding:9px 10px;font-size:12.5px;font-family:var(--sans);outline:none}
+.loc-actions select{flex:1;min-width:104px}
+.loc-actions input{width:80px}
+.loc-actions select:focus,.loc-actions input:focus{border-color:var(--acc)}
+.loc-actions .btn{padding:9px 14px;font-size:12.5px}
+#starDetail{padding:13px 16px;font-size:12.5px;color:var(--ink2);line-height:2}
+#starDetail h4{margin:0 0 6px;font-size:16px;color:var(--acc);font-family:var(--serif);letter-spacing:3px}
+#starDetail .nrow{padding:4px 0}
+[data-theme="mono"] .sw-q0{color:#c8c8c8}[data-theme="mono"] .sw-q1{color:#9a9a9a}
+[data-theme="mono"] .sw-q2{color:#e0e0e0}[data-theme="mono"] .sw-q3{color:#b0b0b0}
+[data-theme="mono"] .sw-hand{stroke:#fff}[data-theme="mono"] .sw-handdot{fill:#fff}
+[data-theme="mono"] .sw-hourzhi{fill:#fff}
+
 footer{position:relative;z-index:1;text-align:center;font-size:10.5px;color:var(--ink3);letter-spacing:1.5px;padding:18px 0 8px}
 footer b{font-family:var(--serif);color:var(--gold)}
 
@@ -457,6 +518,12 @@ footer b{font-family:var(--serif);color:var(--gold)}
   .c-main,.c-chg{gap:2px}.c-badge{width:14px}
   .c-fu{font-size:9.5px;white-space:nowrap}
   .ly-headrow{gap:10px}.ly-name{font-size:26px;letter-spacing:3px}.ly-trigrams{font-size:21px}
+  .star-grid{grid-template-columns:repeat(2,1fr)}
+  .ci-grid{grid-template-columns:repeat(2,1fr)}
+  .loc-actions input{width:76px}
+  .star-note{font-size:10.5px}
+  .net-actions{flex-wrap:wrap}
+  .net-actions .btn{flex:1 1 40%;padding:11px 6px;font-size:12.5px}
 }
 @media (max-width:380px){
   .nav button{padding:6px 6px;font-size:11.5px;letter-spacing:0}
@@ -498,6 +565,7 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
     <button data-view="0" class="on">时辰</button>
     <button data-view="1">六爻</button>
     <button data-view="2">网络</button>
+    <button data-view="3">星象</button>
   </nav>
   <div class="top-r">
     <span class="apchip" id="apChip" hidden><i></i>内网热点</span>
@@ -562,6 +630,7 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
       <div class="net-rows" id="netRows"></div>
     </div>
     <div class="net-actions">
+      <button class="btn btn-primary" id="syncBtn">校时到手机</button>
       <button class="btn btn-ghost" id="apBtn">开启内网热点</button>
       <button class="btn btn-warn" id="reconfigBtn">重新配网</button>
       <button class="btn btn-ghost" id="netRefresh">刷新状态</button>
@@ -582,14 +651,49 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
       </ul>
       <b>实体按键</b>（板上六键：RST 复位 · BOOT · KEY0–KEY3）
       <ul>
-        <li><span class="key">BOOT</span> 短按：切换 时钟 / 六爻 / 状态 界面</li>
+        <li><span class="key">BOOT</span> 短按：切换 时钟 / 六爻 / 状态 / 星象 界面</li>
         <li><span class="key">BOOT</span> 长按 3 秒：运行中开 / 关内网热点 · 配网中退出配网</li>
         <li><span class="key">KEY0</span> 短按：起卦（自动跳到六爻界面）</li>
-        <li><span class="key">KEY1</span> 短按：屏幕反色</li>
+        <li><span class="key">KEY1</span> 短按：版式循环（夜 / 昼 / 素·纯黑白）</li>
         <li><span class="key">KEY2</span> 短按：亮度循环（4 档）</li>
         <li><span class="key">KEY3</span> 短按：状态界面 · 长按 2 秒：休眠 / 唤醒</li>
       </ul>
-      <b>离线运行</b>：设备以本地推算时间独立运行，联网仅用于 NTP 校时——自动联网成功校时一次、手机接入热点校时一次，失败每 15 秒重试，无手动校时；校时成功后时间写入 Flash，断电重启自动恢复，无需持续联网。
+      <b>离线运行</b>：设备以本地推算时间独立运行，联网仅用于校时——自动联网成功校时一次、手机接入热点校时一次、手机打开本页自动以手机时间校时一次（亦可点「校时到手机」随时重校），失败每 15 秒重试；校时成功后时间写入 Flash，断电重启自动恢复，无需持续联网。
+    </div>
+  </section>
+
+  <section class="view" id="view3">
+    <div class="card star-card">
+      <div class="sec-head"><span>盖天星轮 · 二十八宿</span>
+        <button class="btn btn-ghost" id="starExport" style="margin-left:auto;padding:7px 12px;font-size:12px">导出星轮</button></div>
+      <div class="star-wrap"><svg id="starWheel" viewBox="0 0 360 360" aria-label="盖天星轮：上北下南左西右东"></svg></div>
+      <div class="strip">
+        <div class="chip"><span class="ico">☀</span><span>日躔 <b id="stSun">—</b><small id="stSunTerm">—</small></span></div>
+        <div class="chip"><span class="ico">☾</span><span>月将 <b id="stYj">—</b><small>月将加时</small></span></div>
+        <div class="chip"><span class="ico">✦</span><span>中星 <b id="stMid">—</b><small id="stMidDu">—</small></span></div>
+      </div>
+      <p class="star-note">上北下南 · 左西右东。外环二十八宿按四象分居四方（青龙东·朱雀南·白虎西·玄武北），每象各占 90°，象内宿宽依赤道宿度比例展开；内环十二次依地支布列（子北·卯东·午南·酉西），鎏金扇为日躔之次；朱针指当前时辰，鎏金刻度为此刻南中星宿。点宿或次可查看距星、宿度与加时详情。</p>
+    </div>
+    <div class="card" id="starDetail" hidden></div>
+    <div class="card">
+      <div class="sec-head"><span>观测位置</span><b id="locSrc">—</b></div>
+      <div class="net-rows" id="locRows"></div>
+      <div class="loc-actions">
+        <select id="locCity" aria-label="选择城市"></select>
+        <input id="locLat" type="number" step="0.01" min="-90" max="90" placeholder="纬度" aria-label="纬度">
+        <input id="locLon" type="number" step="0.01" min="-180" max="180" placeholder="经度" aria-label="经度">
+        <button class="btn btn-ghost" id="locApply">应用</button>
+        <button class="btn btn-primary" id="locGps">重新定位</button>
+      </div>
+      <p class="star-note">连接设备后自动尝试获取手机定位并同步到板端；内网 http 环境下浏览器可能拒绝定位，此时可选城市或手动输入经纬度。位置用于恒星时与南中星宿推算。</p>
+    </div>
+    <div class="card">
+      <div class="sec-head"><span>二十八宿 · 四象</span><b id="midQuad">—</b></div>
+      <div class="star-grid" id="starGrid"></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><span>十二次 · 日躔月将</span><b id="ciNow">—</b></div>
+      <div class="ci-grid" id="ciGrid"></div>
     </div>
   </section>
 </main>
@@ -638,7 +742,7 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var state = { view: 0, offset: 0, synced: false, online: false, server: null, casting: false, devSeq: 0 };
+  var state = { view: 0, offset: 0, synced: false, online: false, server: null, casting: false, devSeq: 0, phoneSynced: false };
   var WXCOLOR = { '木': 'var(--wx-木)', '火': 'var(--wx-火)', '土': 'var(--wx-土)', '金': 'var(--wx-金)', '水': 'var(--wx-水)' };
   var WXKEY = ['木', '火', '土', '金', '水'];
 
@@ -975,6 +1079,8 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
   function tick() {
     var r = GZ.compute(Date.now() + state.offset);
     renderClock(r);
+    var sec = Math.floor(r.epoch / 1000);
+    if (state.view === 3 && sec !== starLastSec) { starLastSec = sec; renderStar(); }
     return r;
   }
 
@@ -1022,6 +1128,246 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
     toast('星盘 SVG 已导出');
   }
 
+  /* ---------- 星象：盖天星轮 + 观测位置 ---------- */
+  var STAR = GZ.STAR;
+  var ZHI12 = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  var QUAD_NAME = ['东方青龙', '北方玄武', '西方白虎', '南方朱雀'];
+  var QG = [[0, 6], [21, 27], [14, 20], [7, 13]];
+  var starLastSec = -1, starSel = null;
+  var CITIES = [
+    ['西安', 34.34, 108.94], ['北京', 39.90, 116.40], ['上海', 31.23, 121.47], ['广州', 23.13, 113.26],
+    ['深圳', 22.54, 114.06], ['成都', 30.57, 104.07], ['重庆', 29.56, 106.55], ['武汉', 30.59, 114.30],
+    ['南京', 32.06, 118.80], ['杭州', 30.27, 120.16], ['天津', 39.13, 117.20], ['长沙', 28.23, 112.94],
+    ['郑州', 34.75, 113.62], ['济南', 36.65, 117.12], ['沈阳', 41.80, 123.43], ['哈尔滨', 45.80, 126.53],
+    ['昆明', 25.04, 102.71], ['兰州', 36.06, 103.83], ['乌鲁木齐', 43.83, 87.62], ['拉萨', 29.65, 91.14],
+    ['海口', 20.04, 110.32], ['台北', 25.03, 121.56], ['西宁', 36.62, 101.78], ['银川', 38.49, 106.23]
+  ];
+  var loc = (function () {
+    try {
+      var l = JSON.parse(localStorage.getItem('gz_loc') || 'null');
+      if (l && isFinite(l.lat) && isFinite(l.lon) && l.label) return l;
+    } catch (e) { }
+    return { lat: 34.34, lon: 108.94, src: 'default', label: '西安 · 默认' };
+  })();
+  function saveLoc() { localStorage.setItem('gz_loc', JSON.stringify(loc)); }
+  function pushLoc() {
+    if (!state.online) return;
+    fetchJson('/api/loc', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ latE6: Math.round(loc.lat * 1e6), lonE6: Math.round(loc.lon * 1e6) })
+    }).catch(function () { });
+  }
+  function setLoc(lat, lon, src, label) {
+    loc = { lat: Math.max(-90, Math.min(90, lat)), lon: Math.max(-180, Math.min(180, lon)), src: src, label: label };
+    saveLoc(); paintLoc(); pushLoc();
+    if (state.view === 3) renderStar();
+  }
+  function paintLoc() {
+    $('locSrc').textContent = loc.label;
+    $('locRows').innerHTML =
+      '<div class="nrow"><span class="k">纬度</span><span class="v mono">' + loc.lat.toFixed(4) + '°</span></div>' +
+      '<div class="nrow"><span class="k">经度</span><span class="v mono">' + loc.lon.toFixed(4) + '°</span></div>' +
+      '<div class="nrow"><span class="k">来源</span><span class="v">' +
+      ({ gps: '手机 GPS', city: '城市选择', manual: '手动输入', default: '默认西安（可改）' }[loc.src] || loc.src) + '</span></div>';
+    $('locLat').value = loc.lat.toFixed(2);
+    $('locLon').value = loc.lon.toFixed(2);
+  }
+  function geoLocate(auto) {
+    if (!navigator.geolocation) { if (!auto) toast('浏览器不支持定位'); return; }
+    navigator.geolocation.getCurrentPosition(function (p) {
+      setLoc(p.coords.latitude, p.coords.longitude, 'gps', '手机 GPS');
+      toast('已定位 ' + loc.lat.toFixed(2) + ', ' + loc.lon.toFixed(2));
+    }, function () {
+      if (!auto) toast('定位被拒绝 · 请选城市或手动输入');
+    }, { timeout: 8000, maximumAge: 600000 });
+  }
+  (function () {
+    var sel = $('locCity'), h = '<option value="">选择城市…</option>';
+    for (var i = 0; i < CITIES.length; i++) h += '<option value="' + i + '">' + CITIES[i][0] + '</option>';
+    sel.innerHTML = h;
+    sel.onchange = function () {
+      if (this.value === '') return;
+      var c = CITIES[+this.value];
+      setLoc(c[1], c[2], 'city', c[0]);
+      toast('观测位置已设为 ' + c[0]);
+    };
+    $('locApply').onclick = function () {
+      var la = parseFloat($('locLat').value), lo = parseFloat($('locLon').value);
+      if (!isFinite(la) || !isFinite(lo) || la < -90 || la > 90 || lo < -180 || lo > 180) { toast('请输入有效经纬度'); return; }
+      setLoc(la, lo, 'manual', '手动输入');
+      toast('观测位置已应用');
+    };
+    $('locGps').onclick = function () { geoLocate(false); };
+  })();
+
+  function swPol(r, a) { var t = a * Math.PI / 180; return [180 + r * Math.cos(t), 180 - r * Math.sin(t)]; }
+  function swWedge(r1, r2, a0, a1, cls, extra) {
+    var p0 = swPol(r2, a0), p1 = swPol(r2, a1), p2 = swPol(r1, a1), p3 = swPol(r1, a0);
+    var lg = (a1 - a0) > 180 ? 1 : 0;
+    return '<path class="' + cls + '" ' + (extra || '') + ' d="M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) +
+      'A' + r2 + ' ' + r2 + ' 0 ' + lg + ' 0 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2) +
+      'L' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2) +
+      'A' + r1 + ' ' + r1 + ' 0 ' + lg + ' 1 ' + p3[0].toFixed(2) + ' ' + p3[1].toFixed(2) + 'Z"/>';
+  }
+  function swArc(r, a0, a1) {
+    var p0 = swPol(r, a0), p1 = swPol(r, a1);
+    return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + 'A' + r + ' ' + r + ' 0 0 0 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2);
+  }
+  function swTxt(x, y, cls, s) {
+    return '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" class="' + cls + '" text-anchor="middle">' + s + '</text>';
+  }
+  function renderStar() {
+    var t = Date.now() + state.offset;
+    var r = GZ.compute(t), s = STAR.star(t, loc.lon);
+    var h = '<circle cx="180" cy="180" r="150" class="sw-ring"/><circle cx="180" cy="180" r="122" class="sw-ring"/>' +
+      '<circle cx="180" cy="180" r="100" class="sw-ring"/><circle cx="180" cy="180" r="64" class="sw-ring"/>';
+    var k, sp, m;
+    for (k = 0; k < 28; k++) {
+      sp = STAR.lodgeDisp(k);
+      h += '<g class="sw-q' + STAR.lodgeQuad(k) + '">' +
+        swWedge(122, 150, sp.start, sp.start + sp.width, 'sw-wedge' + (k === s.midIdx ? ' mid' : ''), 'data-l="' + k + '"');
+      m = swPol(sp.width < 6 ? 143 : 136, sp.start + sp.width / 2);
+      h += swTxt(m[0], m[1] + 4, 'sw-lodge', STAR.LODGES[k]) + '</g>';
+    }
+    for (k = 0; k < 4; k++)
+      h += '<path class="sw-arc sw-q' + k + '" d="' + swArc(157, k * 90 - 45, k * 90 + 45) + '"/>';
+    for (k = 0; k < 12; k++) {
+      var c0 = 90 - k * 30 - 15;
+      h += swWedge(64, 100, c0, c0 + 30, 'sw-ci' + (k === s.sunCi ? ' sun' : ''), 'data-c="' + k + '"');
+      m = swPol(82, 90 - k * 30);
+      h += swTxt(m[0], m[1] + 3.5, 'sw-ciname' + (k === s.sunCi ? ' sun' : ''), STAR.CI_BY_ZHI[k]);
+    }
+    h += '<circle cx="180" cy="180" r="64" class="sw-center"/>';
+    var ha = 90 - s.hourZhi * 30, h0 = swPol(26, ha), h1 = swPol(98, ha);
+    h += '<line x1="' + h0[0].toFixed(1) + '" y1="' + h0[1].toFixed(1) + '" x2="' + h1[0].toFixed(1) + '" y2="' + h1[1].toFixed(1) + '" class="sw-hand"/>' +
+      '<circle cx="' + h1[0].toFixed(1) + '" cy="' + h1[1].toFixed(1) + '" r="3" class="sw-handdot"/>';
+    m = swPol(111, ha);
+    h += swTxt(m[0], m[1] + 3.5, 'sw-hourzhi', r.hour.zhi);
+    sp = STAR.lodgeDisp(s.midIdx);
+    var ma = sp.start + sp.width / 2, m0 = swPol(122, ma), m1 = swPol(150, ma);
+    h += '<line x1="' + m0[0].toFixed(1) + '" y1="' + m0[1].toFixed(1) + '" x2="' + m1[0].toFixed(1) + '" y2="' + m1[1].toFixed(1) + '" class="sw-midtick"/>' +
+      '<circle cx="' + m1[0].toFixed(1) + '" cy="' + m1[1].toFixed(1) + '" r="2.6" class="sw-middot"/>';
+    h += swTxt(180, 152, 'sw-lbl', '中星') + swTxt(180, 184, 'sw-mid', STAR.LODGES[s.midIdx]) +
+      swTxt(180, 202, 'sw-yj', '月将 ' + ZHI12[s.yueJiang]) + swTxt(180, 216, 'sw-lst', 'LST ' + s.lst.toFixed(1) + '°');
+    h += swTxt(180, 14, 'sw-dir', '北') + swTxt(180, 356, 'sw-dir', '南') + swTxt(10, 185, 'sw-dir', '西') + swTxt(350, 185, 'sw-dir', '东');
+    $('starWheel').innerHTML = h;
+    $('stSun').textContent = STAR.CI_BY_ZHI[s.sunCi];
+    $('stSunTerm').textContent = r.termCur.name + '后 · ' + ZHI12[s.sunCi] + '宫';
+    $('stYj').textContent = ZHI12[s.yueJiang];
+    $('stMid').textContent = STAR.LODGES[s.midIdx];
+    $('stMidDu').textContent = STAR.LODGE_DU[s.midIdx] + '度 · ' + STAR.LODGE_STAR[s.midIdx];
+    $('midQuad').textContent = QUAD_NAME[STAR.lodgeQuad(s.midIdx)];
+    $('ciNow').textContent = STAR.CI_BY_ZHI[s.sunCi] + ' · ' + ZHI12[s.sunCi];
+    var g = '', q, i;
+    for (q = 0; q < 4; q++) {
+      g += '<div class="star-quad sw-q' + q + '"><h5><i></i>' + QUAD_NAME[q] + '</h5>';
+      for (i = QG[q][0]; i <= QG[q][1]; i++)
+        g += '<div class="sq-l' + (i === s.midIdx ? ' mid' : '') + '"><b>' + STAR.LODGES[i] + '</b><small>' + STAR.LODGE_DU[i] + '度 · ' + STAR.LODGE_STAR[i] + '</small></div>';
+      g += '</div>';
+    }
+    $('starGrid').innerHTML = g;
+    g = '';
+    for (i = 0; i < 12; i++) {
+      var ls = STAR.ciLodges(i);
+      var names = [];
+      for (k = 0; k < ls.length; k++) names.push(STAR.LODGES[ls[k]]);
+      g += '<div class="ci-cell' + (i === s.sunCi ? ' sun' : '') + '" data-c="' + i + '"><h5>' + STAR.CI_BY_ZHI[i] +
+        '<span>' + ZHI12[i] + '</span></h5><p>' + names.join(' · ') + '</p></div>';
+    }
+    $('ciGrid').innerHTML = g;
+    if (starSel) paintDetail();
+  }
+  function paintDetail() {
+    var box = $('starDetail');
+    if (!starSel) { box.hidden = true; return; }
+    var t = Date.now() + state.offset, s = STAR.star(t, loc.lon), h = '', i, k;
+    if (starSel.l != null) {
+      i = starSel.l;
+      var sp = STAR.lodgeSpan(i);
+      h = '<h4>' + STAR.LODGES[i] + '宿 · ' + QUAD_NAME[STAR.lodgeQuad(i)] + '</h4>' +
+        '<div class="nrow"><span class="k">赤道区间</span><span class="v mono">' + sp.start.toFixed(1) + '° – ' + ((sp.start + sp.width) % 360).toFixed(1) + '°（宽 ' + sp.width.toFixed(1) + '°）</span></div>' +
+        '<div class="nrow"><span class="k">宿度 / 距星</span><span class="v">' + STAR.LODGE_DU[i] + '度 · ' + STAR.LODGE_STAR[i] + '</span></div>' +
+        '<div class="nrow"><span class="k">当前</span><span class="v" style="color:' + (i === s.midIdx ? 'var(--ok)' : 'var(--ink2)') + '">' +
+        (i === s.midIdx ? '此刻南中（中天）' : '未中天') + '</span></div>';
+    } else {
+      i = starSel.c;
+      var ls = STAR.ciLodges(i), names = [];
+      for (k = 0; k < ls.length; k++) names.push(STAR.LODGES[ls[k]] + '(' + STAR.LODGE_DU[ls[k]] + '度)');
+      h = '<h4>' + STAR.CI_BY_ZHI[i] + ' · ' + ZHI12[i] + '宫</h4>' +
+        '<div class="nrow"><span class="k">所含宿</span><span class="v">' + names.join(' ') + '</span></div>' +
+        '<div class="nrow"><span class="k">日躔 / 月将</span><span class="v" style="color:' + (i === s.sunCi ? 'var(--acc)' : 'var(--ink2)') + '">' +
+        (i === s.sunCi ? '太阳此刻躔此次 · 月将 ' + ZHI12[s.yueJiang] : '太阳不在此次') + '</span></div>' +
+        '<div class="nrow"><span class="k">加时</span><span class="v">' + (i === s.hourZhi ? '当前 ' + ZHI12[s.hourZhi] + '时加临此宫' : '当前时辰 ' + ZHI12[s.hourZhi] + '宫') + '</span></div>';
+    }
+    box.innerHTML = h;
+    box.hidden = false;
+  }
+  $('starWheel').addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-l],[data-c]') : null;
+    if (!el) return;
+    starSel = el.getAttribute('data-l') != null ? { l: +el.getAttribute('data-l') } : { c: +el.getAttribute('data-c') };
+    paintDetail();
+    $('starDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  $('ciGrid').addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-c]') : null;
+    if (!el) return;
+    starSel = { c: +el.getAttribute('data-c') };
+    paintDetail();
+    $('starDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  $('starExport').onclick = function () {
+    var clone = $('starWheel').cloneNode(true);
+    clone.removeAttribute('id');
+    clone.setAttribute('xmlns', NS);
+    clone.setAttribute('width', '720'); clone.setAttribute('height', '848');
+    clone.setAttribute('viewBox', '0 -34 360 424');
+    var cs = getComputedStyle(document.documentElement);
+    function v(n) { return cs.getPropertyValue(n).trim(); }
+    var st = document.createElementNS(NS, 'style');
+    st.textContent = 'text{font-family:"Noto Serif SC","Songti SC",serif}' +
+      '.sw-ring{fill:none;stroke:' + v('--line') + '}' +
+      '.sw-wedge{fill:currentColor;fill-opacity:.12;stroke:currentColor;stroke-opacity:.5;stroke-width:.7}' +
+      '.sw-wedge.mid{fill-opacity:.32;stroke-opacity:1;stroke-width:1.5}' +
+      '.sw-lodge{font-size:11px;fill:currentColor}' +
+      '.sw-ci{fill:' + v('--card2') + ';stroke:' + v('--line') + ';stroke-width:.7}' +
+      '.sw-ci.sun{fill:' + v('--acc') + ';fill-opacity:.2;stroke:' + v('--acc') + '}' +
+      '.sw-ciname{font-size:10.5px;fill:' + v('--ink2') + '}.sw-ciname.sun{fill:' + v('--acc') + ';font-weight:700}' +
+      '.sw-q0{color:' + v('--wx-木') + '}.sw-q1{color:' + v('--wx-水') + '}.sw-q2{color:' + v('--wx-金') + '}.sw-q3{color:' + v('--wx-火') + '}' +
+      '.sw-arc{fill:none;stroke:currentColor;stroke-width:3;stroke-opacity:.75}' +
+      '.sw-dir{font-size:15px;font-weight:900;fill:' + v('--ink') + '}' +
+      '.sw-hand{stroke:' + v('--cinnabar2') + ';stroke-width:2}.sw-handdot{fill:' + v('--cinnabar2') + '}' +
+      '.sw-hourzhi{font-size:10px;fill:' + v('--cinnabar2') + ';font-weight:700}' +
+      '.sw-midtick{stroke:' + v('--acc') + ';stroke-width:2}.sw-middot{fill:' + v('--acc') + '}' +
+      '.sw-center{fill:' + v('--bg2') + ';stroke:' + v('--line') + '}' +
+      '.sw-mid{font-size:25px;font-weight:900;fill:' + v('--acc') + '}' +
+      '.sw-lbl{font-size:8.5px;fill:' + v('--ink3') + ';letter-spacing:3px}' +
+      '.sw-yj{font-size:11px;fill:' + v('--ink') + '}.sw-lst{font-size:8px;fill:' + v('--ink3') + '}';
+    clone.insertBefore(st, clone.firstChild);
+    var bg = document.createElementNS(NS, 'rect');
+    bg.setAttribute('x', '0'); bg.setAttribute('y', '-34'); bg.setAttribute('width', '360'); bg.setAttribute('height', '424');
+    bg.setAttribute('fill', v('--bg'));
+    clone.insertBefore(bg, st.nextSibling);
+    function cap(y, size, fill, s) {
+      var e = document.createElementNS(NS, 'text');
+      e.setAttribute('x', '180'); e.setAttribute('y', y); e.setAttribute('text-anchor', 'middle');
+      e.setAttribute('style', 'font-size:' + size + 'px;fill:' + fill);
+      e.textContent = s; clone.appendChild(e);
+    }
+    var t = Date.now() + state.offset, r = GZ.compute(t), s = STAR.star(t, loc.lon);
+    cap(-14, 13, v('--acc'), '干支钟 · 盖天星轮');
+    cap(372, 11, v('--ink'), r.year.gz + '年 ' + r.month.gz + '月 ' + r.day.gz + '日 ' + r.hour.gz + '时 · ' + pad(r.h) + ':' + pad(r.mi));
+    cap(386, 9, v('--ink2'), '日躔' + STAR.CI_BY_ZHI[s.sunCi] + ' · 月将' + ZHI12[s.yueJiang] + ' · 中星' + STAR.LODGES[s.midIdx] + ' · ' + loc.label + ' ' + loc.lon.toFixed(2) + '°E');
+    var blob = new Blob([monoSvg(new XMLSerializer().serializeToString(clone))], { type: 'image/svg+xml' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ganzhi-starwheel-' + r.Y + pad(r.M) + pad(r.D) + '-' + pad(r.h) + pad(r.mi) + '.svg';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    toast('星轮 SVG 已导出');
+  };
+  paintLoc();
+
   /* ---------- 设备通信 ---------- */
   function fetchJson(url, opt) {
     return fetch(url, opt).then(function (res) {
@@ -1043,12 +1389,30 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
   function fetchState() {
     return fetchJson('/api/state').then(function (d) {
       state.server = d; state.online = true;
+      if (!state.phoneSynced) {
+        state.phoneSynced = true;
+        syncPhone(false);          /* 手机连接后自动以手机时间校时一次 */
+        pushLoc();
+        if (loc.src === 'default') geoLocate(true);
+      }
       if (typeof d.view === 'number' && d.view !== state.view && !state.casting) setView(d.view, false);
       paintSync(); paintNet();
     }).catch(function () {
+      if (state.online) state.phoneSynced = false;
       state.online = false; state.server = null; paintSync(); paintNet();
     });
   }
+  function syncPhone(manual) {
+    if (!state.online) { if (manual) toast('未连接设备 · 无法校时'); return Promise.resolve(); }
+    var before = state.offset;
+    return fetchJson('/api/time', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ epoch: Date.now() })
+    }).then(function () { return fetchNow(); }).then(function () {
+      if (manual) toast('板端已校准到手机时间' + (Math.abs(before) > 1500 ? '（消除 ' + Math.round(Math.abs(before) / 1000) + 's 偏差）' : ''));
+      fetchState();
+    }).catch(function () { if (manual) toast('校时指令发送失败'); });
+  }
+  $('syncBtn').onclick = function () { syncPhone(true); };
   function fetchChart() {
     return fetchJson('/api/chart').then(function (d) {
       if (!d || !d.valid || d.seq === state.devSeq || state.casting) return;
@@ -1063,18 +1427,20 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
   function paintSync() {
     var dot = $('syncDot');
     dot.className = 'dot' + (state.online ? (state.synced ? ' ok' : '') : ' err');
-    dot.title = state.online ? (state.synced ? '已联网对时（NTP）' : '已连接设备 · 尚未对时') : '本地时间演示';
+    var src = state.server && state.server.src === 'phone' ? '手机' : 'NTP';
+    dot.title = state.online ? (state.synced ? '已对时（' + src + '）' : '已连接设备 · 尚未对时') : '本地时间演示';
     $('footInfo').textContent = state.online ? '· ' + (state.server && state.server.ip ? state.server.ip : '在线') : '· 本地演示';
   }
   function setView(v, push) {
     state.view = v;
     var btns = $('nav').children;
     for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', +btns[i].dataset.view === v);
-    for (var j = 0; j < 3; j++) $('view' + j).classList.toggle('on', j === v);
+    for (var j = 0; j < 4; j++) $('view' + j).classList.toggle('on', j === v);
     if (push && state.online) {
       fetchJson('/api/view', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ v: v }) }).catch(function () { });
     }
     if (v === 2) fetchState();
+    if (v === 3) renderStar();
     window.scrollTo({ top: 0 });
   }
   $('nav').addEventListener('click', function (e) {
@@ -1120,7 +1486,8 @@ body[data-motion="off"] *,body[data-motion="off"] *::before,body[data-motion="of
       '<div class="nrow"><span class="k">IP 地址</span><span class="v mono">' + ip + '</span></div>' +
       '<div class="nrow"><span class="k">内网热点</span><span class="v" style="color:' + (apOn ? 'var(--ok)' : 'var(--ink2)') + '">' + (apOn ? 'GanZhi-Setup · 192.168.4.1' : '关闭 · 长按 BOOT 开启') + '</span></div>' +
       '<div class="nrow"><span class="k">访问地址</span><span class="v mono"><a href="http://ganzhi.local">ganzhi.local</a></span></div>' +
-      '<div class="nrow"><span class="k">时间同步</span><span class="v" style="color:' + (d.synced ? 'var(--ok)' : 'var(--warn)') + '">' + (d.synced ? 'NTP 已对时' : '未校时 · 本地推算') + '</span></div>' +
+      '<div class="nrow"><span class="k">时间同步</span><span class="v" style="color:' + (d.synced ? 'var(--ok)' : 'var(--warn)') + '">' + (d.synced ? (d.src === 'phone' ? '手机时间已对时' : 'NTP 已对时') : '未校时 · 本地推算') + '</span></div>' +
+      '<div class="nrow"><span class="k">观测位置</span><span class="v mono">' + (d.latE6 != null ? (d.latE6 / 1e6).toFixed(2) + ', ' + (d.lonE6 / 1e6).toFixed(2) : '—') + '</span></div>' +
       '<div class="nrow"><span class="k">运行时长</span><span class="v">' + fmtUp(d.uptime) + '</span></div>' +
       '<div class="nrow"><span class="k">设备</span><span class="v mono">ESP32-S3 · ' + (d.mac || '') + '</span></div>' +
       '<div class="nrow"><span class="k">固件</span><span class="v mono">' + (d.ver || 'ganzhi 1.0') + '</span></div>';

@@ -76,7 +76,7 @@ static esp_err_t now_handler(httpd_req_t *req)
 
 static esp_err_t state_handler(httpd_req_t *req)
 {
-    char buf[320];
+    char buf[384];
     mj_t m;
     mj_init(&m, buf, sizeof buf);
     mj_obj_begin(&m);
@@ -90,6 +90,9 @@ static esp_err_t state_handler(httpd_req_t *req)
     mj_kv_str(&m, "ver", APP_VER);
     mj_kv_str(&m, "mac", app_mac());
     mj_kv_bool(&m, "ap", app_ap_on());
+    mj_kv_str(&m, "src", app_time_src());
+    mj_kv_int(&m, "latE6", app_lat_e6());
+    mj_kv_int(&m, "lonE6", app_lon_e6());
     mj_obj_end(&m);
     return send_json(req, mj_done(&m));
 }
@@ -142,7 +145,32 @@ static esp_err_t view_handler(httpd_req_t *req)
         return send_json(req, "{\"ok\":false}");
     int v = -1;
     mj_get_int(body, "v", &v);
-    if (v >= 0 && v <= 2) app_set_view(v);
+    if (v >= 0 && v <= 3) app_set_view(v);
+    return send_json(req, "{\"ok\":true}");
+}
+
+static esp_err_t time_handler(httpd_req_t *req)
+{
+    char body[96];
+    if (read_body(req, body, sizeof body) < 0)
+        return send_json(req, "{\"ok\":false}");
+    long long e = 0;
+    if (mj_get_ll(body, "epoch", &e) != 0 || e < 1700000000000LL || e > 4102444800000LL)
+        return send_json(req, "{\"ok\":false}");
+    app_cmd_time(e);
+    return send_json(req, "{\"ok\":true}");
+}
+
+static esp_err_t loc_handler(httpd_req_t *req)
+{
+    char body[96];
+    if (read_body(req, body, sizeof body) < 0)
+        return send_json(req, "{\"ok\":false}");
+    int la = 0, lo = 0;
+    if (mj_get_int(body, "latE6", &la) != 0 || mj_get_int(body, "lonE6", &lo) != 0
+        || la < -90000000 || la > 90000000 || lo < -180000000 || lo > 180000000)
+        return send_json(req, "{\"ok\":false}");
+    app_cmd_loc(la, lo);
     return send_json(req, "{\"ok\":true}");
 }
 
@@ -272,6 +300,8 @@ void web_server_start(void)
     GET("/api/state", state_handler);
     GET("/api/chart", chart_handler);
     POST("/api/view", view_handler);
+    POST("/api/time", time_handler);
+    POST("/api/loc", loc_handler);
     POST("/api/reconfig", reconfig_handler);
     POST("/api/ap", ap_handler);
     GET("/scan", scan_handler);

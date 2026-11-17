@@ -203,7 +203,10 @@ static void render_status_lcd(void)
                      app_mode() == DEV_SETUP ? LC_GOLD2 : (online ? LC_JADE : LC_MUT));
 
     lcd_text16s(14, 134, "校时", LC_MUT);
-    if (app_synced()) lcd_text16s(46, 134, "已校时", LC_JADE);
+    if (app_synced()) {
+        snprintf(v, sizeof v, "已校时-%s", strcmp(app_time_src(), "phone") == 0 ? "手机" : "网络");
+        lcd_text16s(46, 134, v, LC_JADE);
+    }
     else if (app_time_valid()) lcd_text16s(46, 134, "运行中", LC_GOLD2);
     else lcd_text16s(46, 134, "未校时", LC_MUT);
 
@@ -221,6 +224,8 @@ static void render_status_lcd(void)
     lcd_text16s(14, 166, "运行", LC_MUT);
     snprintf(v, sizeof v, "UP %lus", (unsigned long)app_uptime_s());
     lcd_text16s(46, 166, v, LC_SILK);
+    snprintf(v, sizeof v, "%.2f,%.2f", app_lat_e6() / 1e6, app_lon_e6() / 1e6);
+    lcd_text16s(120, 166, v, LC_MUT);
     lcd_text16s(14, 182, "MAC", LC_MUT);
     lcd_text16s(46, 182, app_mac(), LC_MUT);
 
@@ -235,7 +240,74 @@ static void render_status_lcd(void)
         lc16s(198, "手机连热点 浏览器配网", LC_GOLD2);
     }
     lcd_text16s(14, 214, "BOOT 切换 / 长按配网", LC_MUT);
-    lcd_text16s(14, 228, "K0卦 K1反色 K2亮度 K3校时", LC_MUT);
+    lcd_text16s(14, 228, "K0卦 K1版式 K2亮度 K3状态", LC_MUT);
+    lcd_flush();
+}
+
+/* ---------- 星象：盖天轮 上北下南左西右东 ---------- */
+static void render_star_lcd(void)
+{
+    lcd_clear(LC_BG);
+    lcd_decor();
+    gz_star_t st;
+    gz_star(s_now.epoch, app_lon_e6() / 1e6, &st);
+    const int CX = 120, CY = 160;
+    const double D2R = 3.14159265358979323846 / 180.0;
+    static const int QUAD_C[4] = { LC_JADE, LC_INDIGO, LC_SILVER, LC_CINN };
+    lcd_circle(CX, CY, 60, 0, LC_LINE);
+    lcd_circle(CX, CY, 42, 0, LC_LINE);
+    lcd_circle(CX, CY, 22, 0, LC_LINE);
+    for (int k = 0; k < 28; k++) {
+        double s0, w;
+        gz_lodge_disp(k, &s0, &w);
+        double b = s0 * D2R;
+        for (int r = 42; r <= 60; r++)
+            lcd_pixel(CX + (int)(cos(b) * r), CY - (int)(sin(b) * r), LC_LINE);
+        double m = (s0 + w / 2) * D2R;
+        int lr = w < 6 ? 56 : 50;
+        lcd_text16s(CX + (int)(cos(m) * lr) - 4, CY - (int)(sin(m) * lr) - 4,
+                    gz_lodge(k), QUAD_C[gz_lodge_quad(k)]);
+    }
+    for (int q = 0; q < 4; q++)
+        lcd_arc(CX, CY, 58, -(q * 90 + 45), -(q * 90 - 45), QUAD_C[q]);
+    for (int r = 29; r <= 35; r++)
+        lcd_arc(CX, CY, r, -(90 - st.sunCi * 30 + 15), -(90 - st.sunCi * 30 - 15), LC_GOLD);
+    for (int i = 0; i < 12; i++) {
+        double b = (90 - i * 30 - 15) * D2R;
+        for (int r = 22; r <= 42; r++)
+            lcd_pixel(CX + (int)(cos(b) * r), CY - (int)(sin(b) * r), LC_LINE);
+        double m = (90 - i * 30) * D2R;
+        lcd_text16s(CX + (int)(cos(m) * 32) - 8, CY - (int)(sin(m) * 32) - 4,
+                    gz_ci(i), i == st.sunCi ? LC_GOLD : LC_MUT);
+    }
+    double ha = (90 - st.hourZhi * 30) * D2R;
+    for (int r = 24; r <= 40; r++)
+        lcd_pixel(CX + (int)(cos(ha) * r), CY - (int)(sin(ha) * r), LC_CINN2);
+    lcd_circle(CX + (int)(cos(ha) * 40), CY - (int)(sin(ha) * 40), 2, 1, LC_CINN2);
+    double ms0, mw;
+    gz_lodge_disp(st.midIdx, &ms0, &mw);
+    double ma = (ms0 + mw / 2) * D2R;
+    for (int r = 42; r <= 60; r++)
+        lcd_pixel(CX + (int)(cos(ma) * r), CY - (int)(sin(ma) * r), LC_GOLD2);
+    lcd_circle(CX + (int)(cos(ma) * 60), CY - (int)(sin(ma) * 60), 2, 1, LC_GOLD2);
+    char b[24];
+    snprintf(b, sizeof b, "中星%s", gz_lodge(st.midIdx));
+    lcd_text16s(CX - 12, 146, b, LC_SILK);
+    snprintf(b, sizeof b, "月将%s", gz_zhi(st.yueJiang));
+    lcd_text16s(CX - 12, 162, b, LC_GOLD);
+    lcd_text16(112, 82, "北", LC_SILK);
+    lcd_text16(112, 222, "南", LC_SILK);
+    lcd_text16(30, 152, "西", LC_SILK);
+    lcd_text16(194, 152, "东", LC_SILK);
+    snprintf(b, sizeof b, "日躔%s", gz_ci(st.sunCi));
+    lcd_text16s(14, 82, b, LC_GOLD2);
+    char lst[16];
+    snprintf(lst, sizeof lst, "LST%5.1f", st.lst);
+    lcd_text8(162, 82, lst, LC_MUT, 1);
+    snprintf(b, sizeof b, "时辰%s", gz_zhi(st.hourZhi));
+    lcd_text16s(14, 222, b, LC_CINN2);
+    snprintf(b, sizeof b, "%s%d度", gz_lodge(st.midIdx), gz_lodge_du(st.midIdx));
+    lcd_text16s(226 - lcd_text16_width(b) / 2, 222, b, LC_MUT);
     lcd_flush();
 }
 
@@ -393,6 +465,27 @@ static void render_status(void)
     ssd1306_flush();
 }
 
+static void render_star(void)
+{
+    if (s_lcd) { render_star_lcd(); return; }
+    ssd1306_clear();
+    gz_star_t st;
+    gz_star(s_now.epoch, app_lon_e6() / 1e6, &st);
+    char l[40];
+    snprintf(l, sizeof l, "中星%s", gz_lodge(st.midIdx));
+    ssd1306_text16(0, 0, l, 1);
+    snprintf(l, sizeof l, "日躔%s", gz_ci(st.sunCi));
+    ssd1306_text16(0, 16, l, 1);
+    snprintf(l, sizeof l, "月将%s", gz_zhi(st.yueJiang));
+    ssd1306_text16(0, 32, l, 1);
+    snprintf(l, sizeof l, "%s时", gz_zhi(st.hourZhi));
+    ssd1306_text16(0, 48, l, 1);
+    char a[16];
+    snprintf(a, sizeof a, "LST%5.1f", st.lst);
+    ssd1306_text8(56, 48, a, 1, 1);
+    ssd1306_flush();
+}
+
 static void ui_task(void *arg)
 {
     int64_t boot = esp_timer_get_time();
@@ -400,7 +493,7 @@ static void ui_task(void *arg)
     render_splash();
     gz_compute(app_epoch_ms(), &s_now);   /* 预热节气缓存 */
 
-    int last_sec = -1, last_view = -1, last_inv = -1, last_br = -1;
+    int last_sec = -1, last_view = -1, last_th = -1, last_br = -1;
     bool sleep_applied = false, was_sleep = false;
     uint32_t last_seq = 0;
 
@@ -415,12 +508,12 @@ static void ui_task(void *arg)
         }
         if (sleep_applied) { ssd1306_sleep(false); sleep_applied = false; }
 
-        int inv = app_invert() ? 1 : 0;
+        int th = app_theme();
         int br = app_brightness();
-        if (inv != last_inv || br != last_br) {
-            if (s_lcd) lcd_palette(br & 3, inv);
-            else { ssd1306_invert(inv); ssd1306_contrast(BRIGHT[br & 3]); }
-            last_inv = inv; last_br = br;
+        if (th != last_th || br != last_br) {
+            if (s_lcd) lcd_palette(br & 3, th);
+            else { ssd1306_invert(th == 1 ? 1 : 0); ssd1306_contrast(BRIGHT[br & 3]); }
+            last_th = th; last_br = br;
         }
 
         int view = app_view();
@@ -438,7 +531,8 @@ static void ui_task(void *arg)
                 if (sec != last_sec || view != last_view) gz_compute(epoch, &s_now);
                 if (view == 0) render_clock();
                 else if (view == 1) render_liuyao(now_us);
-                else render_status();
+                else if (view == 2) render_status();
+                else render_star();
             }
             last_sec = sec; last_view = view; last_seq = seq;
         }

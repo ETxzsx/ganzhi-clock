@@ -32,6 +32,15 @@ int main(int argc, char **argv) {
         }
         return 0;
     }
+    if (argc > 1 && strcmp(argv[1], "star") == 0) {
+        long long t; double lon;
+        while (scanf("%lld %lf", &t, &lon) == 2) {
+            gz_star_t s;
+            gz_star(t, lon, &s);
+            printf("%.3f %d %d %d %d\n", s.lst, s.midIdx, s.sunCi, s.yueJiang, s.hourZhi);
+        }
+        return 0;
+    }
     long long t;
     while (scanf("%lld", &t) == 1) {
         gz_now_t o;

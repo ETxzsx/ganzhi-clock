@@ -210,14 +210,76 @@
       shichen: ZHI[hBranch], shichenName: ZHI[hBranch] + '时', shichenRange: SHICHEN_RANGE[hBranch],
       hBranch: hBranch,
       lunar: lunar,
-      termCur: { name: TERMS[cur.k], ms: cur.ms },
-      termNext: { name: TERMS[next.k], ms: next.ms },
+      termCur: { k: cur.k, name: TERMS[cur.k], ms: cur.ms },
+      termNext: { k: next.k, name: TERMS[next.k], ms: next.ms },
       jieqiDay: Math.floor((t - cur.ms) / 86400000) + 1
     };
   }
 
+  /* ---------- 星象（与 main/gz_core.c 同表同算法） ---------- */
+  var LODGES = ['角', '亢', '氐', '房', '心', '尾', '箕', '井', '鬼', '柳', '星', '张', '翼', '轸',
+    '奎', '娄', '胃', '昴', '毕', '觜', '参', '斗', '牛', '女', '虚', '危', '室', '壁'];
+  var LODGE_DU = [12, 9, 15, 5, 5, 18, 11, 33, 4, 15, 7, 18, 18, 17, 16, 12, 14, 11, 16, 2, 9, 26, 8, 12, 10, 17, 16, 9];
+  var LODGE_STAR = ['室女α', '室女κ', '天秤α', '天蝎π', '天蝎σ', '天蝎μ', '人马γ', '双子μ', '巨蟹θ', '长蛇δ',
+    '长蛇α', '长蛇υ', '巨爵α', '乌鸦γ', '仙女ζ', '白羊β', '白羊35', '金牛η', '金牛ε', '猎户λ',
+    '猎户δ', '人马φ', '摩羯β', '宝瓶ε', '宝瓶β', '宝瓶α', '飞马α', '飞马γ'];
+  var QUADS = ['东方青龙', '北方玄武', '西方白虎', '南方朱雀'];
+  var CI_BY_ZHI = ['玄枵', '星纪', '析木', '大火', '寿星', '鹑尾', '鹑火', '鹑首', '实沈', '大梁', '降娄', '娵訾'];
+  var CI_START = [23, 21, 5, 2, 13, 11, 9, 7, 18, 16, 14, 25];
+  var CI_N = [3, 3, 3, 4, 4, 3, 3, 3, 4, 3, 3, 4];
+  var RA_ORDER = [0, 1, 2, 3, 4, 5, 6, 21, 22, 23, 24, 25, 26, 27, 14, 15, 16, 17, 18, 19, 20, 7, 8, 9, 10, 11, 12, 13];
+  var DU_SCALE = 360 / 365, JIAO_RA = 201.3;
+  function lodgeQuad(i) { i %= 28; return i < 7 ? 0 : i < 14 ? 3 : i < 21 ? 2 : 1; }
+  function lodgeSpan(i) {
+    var acc = JIAO_RA;
+    for (var k = 0; k < 28; k++) {
+      var idx = RA_ORDER[k], w = LODGE_DU[idx] * DU_SCALE;
+      if (idx === i % 28) return { start: acc, width: w };
+      acc = (acc + w) % 360;
+    }
+    return { start: 0, width: 0 };
+  }
+  function lodgeDisp(i) {
+    i %= 28;
+    var q = lodgeQuad(i);
+    var QFIRST = [0, 21, 14, 7], QCENTER = [0, 90, 180, 270];
+    var total = 0, k;
+    for (k = 0; k < 7; k++) total += LODGE_DU[QFIRST[q] + k];
+    var acc = QCENTER[q] - 45;
+    for (k = 0; k < 7; k++) {
+      var idx = QFIRST[q] + k, w = LODGE_DU[idx] * 90 / total;
+      if (idx === i) return { start: acc, width: w };
+      acc += w;
+    }
+    return { start: 0, width: 0 };
+  }
+  function ciLodges(zhi) {
+    zhi %= 12;
+    var pos = RA_ORDER.indexOf(CI_START[zhi]), out = [];
+    for (var i = 0; i < CI_N[zhi]; i++) out.push(RA_ORDER[(pos + i) % 28]);
+    return out;
+  }
+  function star(t, lon) {
+    var r = compute(t);
+    var k = r.termCur.k;
+    if (k % 2 === 0) k = (k + 23) % 24;
+    var sunCi = (13 - (k + 1) / 2) % 12;
+    var d = t / 86400000 - 10957.5;
+    var lst = (280.46061837 + 360.98564736629 * d + (lon || 0)) % 360;
+    if (lst < 0) lst += 360;
+    var midIdx = 0;
+    for (var i = 0; i < 28; i++) {
+      var sp = lodgeSpan(i), rel = (lst - sp.start) % 360;
+      if (rel < 0) rel += 360;
+      if (rel < sp.width) { midIdx = i; break; }
+    }
+    return { lst: lst, midIdx: midIdx, sunCi: sunCi, yueJiang: sunCi, hourZhi: r.hBranch };
+  }
+  var STAR = { LODGES: LODGES, LODGE_DU: LODGE_DU, LODGE_STAR: LODGE_STAR, QUADS: QUADS,
+    CI_BY_ZHI: CI_BY_ZHI, lodgeQuad: lodgeQuad, lodgeSpan: lodgeSpan, lodgeDisp: lodgeDisp, ciLodges: ciLodges, star: star };
+
   var api = { compute: compute, GAN: GAN, ZHI: ZHI, TERMS: TERMS, NAYIN: NAYIN, WX_G: WX_G, WX_Z: WX_Z,
-    SHICHEN_RANGE: SHICHEN_RANGE, gzName: gzName, gzIdx: gzIdx, termMs: termMs, solarToLunar: solarToLunar };
+    SHICHEN_RANGE: SHICHEN_RANGE, gzName: gzName, gzIdx: gzIdx, termMs: termMs, solarToLunar: solarToLunar, STAR: STAR };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.GZ = api;
 })(typeof self !== 'undefined' ? self : this);

@@ -124,3 +124,14 @@ int mj_get_int(const char *json, const char *key, int *out)
     *out = (int)v;
     return 0;
 }
+int mj_get_ll(const char *json, const char *key, long long *out)
+{
+    const char *p = find_key(json, key);
+    if (!p) return -1;
+    while (*p && isspace((unsigned char)*p)) p++;
+    char *end;
+    long long v = strtoll(p, &end, 10);
+    if (end == p) return -1;
+    *out = v;
+    return 0;
+}

@@ -370,3 +370,95 @@ const char *ly_rel(int r) { return REL[r % 5]; }
 const char *ly_spirit(int s) { return SPIRITS[s % 6]; }
 const char *ly_palace_name(int p) { return TRI_NAME[p % 8]; }
 const char *ly_stage_name(int s) { return STAGE[s % 8]; }
+
+/* ---------- 星象 ---------- */
+static const char *LODGES[28] = {
+    "角", "亢", "氐", "房", "心", "尾", "箕", "井", "鬼", "柳", "星", "张", "翼", "轸",
+    "奎", "娄", "胃", "昴", "毕", "觜", "参", "斗", "牛", "女", "虚", "危", "室", "壁"
+};
+static const int LODGE_DU[28] = {
+    12, 9, 15, 5, 5, 18, 11, 33, 4, 15, 7, 18, 18, 17,
+    16, 12, 14, 11, 16, 2, 9, 26, 8, 12, 10, 17, 16, 9
+};
+static const char *LODGE_STAR[28] = {
+    "室女α", "室女κ", "天秤α", "天蝎π", "天蝎σ", "天蝎μ", "人马γ", "双子μ", "巨蟹θ", "长蛇δ",
+    "长蛇α", "长蛇υ", "巨爵α", "乌鸦γ", "仙女ζ", "白羊β", "白羊35", "金牛η", "金牛ε", "猎户λ",
+    "猎户δ", "人马φ", "摩羯β", "宝瓶ε", "宝瓶β", "宝瓶α", "飞马α", "飞马γ"
+};
+static const char *QUADS[4] = { "东方青龙", "北方玄武", "西方白虎", "南方朱雀" };
+static const char *CI_BY_ZHI[12] = {
+    "玄枵", "星纪", "析木", "大火", "寿星", "鹑尾", "鹑火", "鹑首", "实沈", "大梁", "降娄", "娵訾"
+};
+static const int CI_START[12] = { 23, 21, 5, 2, 13, 11, 9, 7, 18, 16, 14, 25 };
+static const int CI_N[12] = { 3, 3, 3, 4, 4, 3, 3, 3, 4, 3, 3, 4 };
+static const int RA_ORDER[28] = {
+    0, 1, 2, 3, 4, 5, 6, 21, 22, 23, 24, 25, 26, 27, 14, 15, 16, 17, 18, 19, 20, 7, 8, 9, 10, 11, 12, 13
+};
+#define DU_SCALE (360.0 / 365.0)
+#define JIAO_RA 201.3   /* 角宿距星（室女α Spica）J2000 赤经 */
+
+const char *gz_lodge(int i) { return LODGES[i % 28]; }
+int gz_lodge_du(int i) { return LODGE_DU[i % 28]; }
+const char *gz_lodge_star(int i) { return LODGE_STAR[i % 28]; }
+int gz_lodge_quad(int i) { i %= 28; return i < 7 ? 0 : i < 14 ? 3 : i < 21 ? 2 : 1; }
+const char *gz_quad(int q) { return QUADS[q % 4]; }
+const char *gz_ci(int zhi) { return CI_BY_ZHI[zhi % 12]; }
+void gz_ci_lodges(int zhi, int out[4], int *n)
+{
+    zhi %= 12;
+    int pos = 0;
+    for (int i = 0; i < 28; i++) if (RA_ORDER[i] == CI_START[zhi]) { pos = i; break; }
+    *n = CI_N[zhi];
+    for (int i = 0; i < CI_N[zhi]; i++) out[i] = RA_ORDER[(pos + i) % 28];
+}
+void gz_lodge_span(int i, double *start, double *width)
+{
+    double acc = JIAO_RA;
+    for (int k = 0; k < 28; k++) {
+        int idx = RA_ORDER[k];
+        double w = LODGE_DU[idx] * DU_SCALE;
+        if (idx == i % 28) { *start = acc; *width = w; return; }
+        acc += w;
+        if (acc >= 360) acc -= 360;
+    }
+    *start = 0; *width = 0;
+}
+void gz_lodge_disp(int i, double *start, double *width)
+{
+    i %= 28;
+    int q = gz_lodge_quad(i);
+    static const int QFIRST[4] = { 0, 21, 14, 7 };
+    static const double QCENTER[4] = { 0, 90, 180, 270 };
+    double total = 0;
+    for (int k = 0; k < 7; k++) total += LODGE_DU[QFIRST[q] + k];
+    double acc = QCENTER[q] - 45;
+    for (int k = 0; k < 7; k++) {
+        int idx = QFIRST[q] + k;
+        double w = LODGE_DU[idx] * 90.0 / total;
+        if (idx == i) { *start = acc; *width = w; return; }
+        acc += w;
+    }
+    *start = 0; *width = 0;
+}
+void gz_star(int64_t epoch_ms, double lon, gz_star_t *o)
+{
+    gz_now_t n;
+    gz_compute(epoch_ms, &n);
+    int k = n.termCurK;
+    if (k % 2 == 0) k = (k + 23) % 24;   /* 日躔以中气为界 */
+    o->sunCi = (13 - (k + 1) / 2) % 12;
+    o->yueJiang = o->sunCi;
+    o->hourZhi = n.hBranch;
+    double d = (double)epoch_ms / 86400000.0 - 10957.5;
+    double lst = fmod(280.46061837 + 360.98564736629 * d + lon, 360.0);
+    if (lst < 0) lst += 360;
+    o->lst = lst;
+    o->midIdx = 0;
+    for (int i = 0; i < 28; i++) {
+        double st, w;
+        gz_lodge_span(i, &st, &w);
+        double rel = fmod(lst - st, 360.0);
+        if (rel < 0) rel += 360;
+        if (rel < w) { o->midIdx = i; break; }
+    }
+}
