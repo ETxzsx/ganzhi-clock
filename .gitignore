@@ -1,0 +1,10 @@
+build/
+managed_components/
+dependencies.lock
+sdkconfig.old
+test/*.txt
+test/*.obj
+test/*.exe
+test/*.png
+test/*.xml
+__pycache__/
